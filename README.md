@@ -2,6 +2,9 @@
 <br/> <br/>
 
 
+- Visual Studio Community 2022
+- .NET 6.0
+
 ## Iniciando Projeto (Blank Solution)
 📁FrontEnd ( App Web ASP.NET Core MVC ) <br/>
 [E-Commerce.Web] <br/><br/>
@@ -13,7 +16,7 @@
 <h1 align="center">📁 BackEnd </h1>
 
 
-<h2 align="center">Adicionar Dependências</h2>
+<h2 align="center">Adicionando Dependências</h2>
 
 ````bash
  AutoMapper
@@ -27,11 +30,10 @@
  Swashbuckle.AspNetCore.SwaggerUI
 ````
 
-<br/>
 
-<h2 align="center">Criar Base de Dados</h2>
+<h2 align="center">Criando Base de Dados</h2>
 
-📁[Model/Base/BaseEntity.cs]
+📁[Models/Base/BaseEntity.cs]
 
 ```bash
 [Key]
@@ -40,7 +42,7 @@
 public long Id { get; set; }
 ```
 
-📁[Model/Context/MySQLContext.cs]
+📁[Models/Context/MySQLContext.cs]
 
 ```bash
     public class MySQLContext : DbContext
@@ -63,9 +65,9 @@ builder.Services.AddDbContext<MySQLContext>
 
 <br/>
 
-<h2 align="center">Criar Entidade </h2>
+<h2 align="center">Criando Entidade </h2>
 
-📁[Model/Product.cs]
+📁[Models/Product.cs]
 
 ```bash
 {
@@ -98,7 +100,7 @@ builder.Services.AddDbContext<MySQLContext>
 
 <br/>
   
-<h2 align="center">Executar as Migrations [Package Manager Console]</h2>
+<h2 align="center">Executando as Migrations [Package Manager Console]</h2>
 
 ````bash
 add-migration [name]
@@ -301,7 +303,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 <br/>
 
 <h2 align="center">Populando o Banco de Dados</h2>
-📁[Model/Context/MySQLContext.cs]
+📁[Models/Context/MySQLContext.cs]
 
 ````bash
 public class MySQLContext : DbContext
@@ -336,7 +338,7 @@ public class MySQLContext : DbContext
 ````
 <br/>
 
-<h2 align="center">Executar Migration</h2>
+<h2 align="center">Executando Migration</h2>
 
 ````bash
 add-migration [name]
@@ -345,3 +347,83 @@ add-migration [name]
 update-database
 ````
 ![image](https://user-images.githubusercontent.com/84939473/149830689-13cb7f7e-27eb-4c78-b077-bb54d37a673d.png)
+
+<br/><br/>
+
+<h2 align="center">Integração BackEnd / FrontEnd</h2>
+
+<h1 align="center">📁 FrontEnd </h1>
+
+[appsettings.jon]
+````bash
+	"ServiceUrls": {
+		"ProductAPI": "https://localhost:7077"
+	}
+````
+📁 [Models/ProductModel.cs]
+````bash
+    public class ProductModel
+    {
+        public long Id { get; set; }
+        public string? Name { get; set; }
+        public decimal Price { get; set; }
+        public string? Description { get; set; }
+        public string? CategotyName { get; set; }
+        public string? imageUrl { get; set; }
+    }
+````
+📁 [Services/IServices/IProductService.cs]
+````bash
+    public interface IProductService
+    {
+        Task<IEnumerable<ProductModel>> FindAllProducts();
+        Task<ProductModel> FindAProductsById(long id);
+        Task<ProductModel> CreateProduct(ProductModel model);
+        Task<ProductModel> UpdateProduct(ProductModel model);
+        Task<bool> DeleteProductById(long id);
+    }
+````
+📁 [Utils/HttpClientExtensions.cs]
+````bash
+    public static class HttpClientExtensions
+    {
+        private static MediaTypeHeaderValue contentType
+            = new MediaTypeHeaderValue("application/json");
+        public static async Task<T> ReadContentAs<T>(
+            this HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode) throw
+                     new ApplicationException(
+                         $"Something went wrong calling the API: " +
+                         $"{response.ReasonPhrase}");
+            var dataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return JsonSerializer.Deserialize<T>(dataAsString,
+                new JsonSerializerOptions
+                {PropertyNameCaseInsensitive = true});
+        }
+
+        public static Task<HttpResponseMessage> PostAsJson<T>(
+            this HttpClient httpClient,
+            string url,
+            T data)
+        {
+            var dataAsString = JsonSerializer.Serialize(data);
+            var content = new StringContent(dataAsString);
+            content.Headers.ContentType = contentType;
+            return httpClient.PostAsync(url, content);
+        }
+        
+        public static Task<HttpResponseMessage> PutAsJson<T>(
+            this HttpClient httpClient,
+            string url,
+            T data)
+        {
+            var dataAsString = JsonSerializer.Serialize(data);
+            var content = new StringContent(dataAsString);
+            content.Headers.ContentType = contentType;
+            return httpClient.PutAsync(url, content);
+        }
+            
+
+    }
+````
