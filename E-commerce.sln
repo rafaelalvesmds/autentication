@@ -5,7 +5,7 @@ VisualStudioVersion = 17.0.32014.148
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FrontEnd", "FrontEnd", "{E306DC8F-9C8C-4BFF-B42F-0B6FC133EC42}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Service", "Service", "{7B6D1044-0A0F-4E4C-969C-CAA1FDB746F2}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BackEnd", "BackEnd", "{7B6D1044-0A0F-4E4C-969C-CAA1FDB746F2}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "E-Commerce.Web", "E-Commerce.Web\E-Commerce.Web.csproj", "{E50EB7AC-7414-4019-A73E-920857BADD4E}"
 EndProject
