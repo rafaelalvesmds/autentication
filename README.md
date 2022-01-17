@@ -295,6 +295,8 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 
     }
 ````
+![image](https://user-images.githubusercontent.com/84939473/149830110-c831b645-300e-4524-9897-7c36a1da7191.png)
+
 
 <br/>
 
@@ -342,3 +344,4 @@ add-migration [name]
 ````bash
 update-database
 ````
+![image](https://user-images.githubusercontent.com/84939473/149830689-13cb7f7e-27eb-4c78-b077-bb54d37a673d.png)
