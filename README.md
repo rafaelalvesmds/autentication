@@ -360,6 +360,9 @@ update-database
 		"ProductAPI": "https://localhost:7077"
 	}
 ````
+
+<h2 align="center">Criando Model</h2>
+
 📁 [Models/ProductModel.cs]
 ````bash
     public class ProductModel
@@ -372,17 +375,23 @@ update-database
         public string? imageUrl { get; set; }
     }
 ````
+
+<h2 align="center">Definindo as Operações da Interface do Serviço</h2>
+
 📁 [Services/IServices/IProductService.cs]
 ````bash
     public interface IProductService
     {
         Task<IEnumerable<ProductModel>> FindAllProducts();
-        Task<ProductModel> FindAProductsById(long id);
+        Task<ProductModel> FindProductById(long id);
         Task<ProductModel> CreateProduct(ProductModel model);
         Task<ProductModel> UpdateProduct(ProductModel model);
         Task<bool> DeleteProductById(long id);
     }
 ````
+
+<h2 align="center">Implementando a Classe HttpClientExtensions</h2>
+
 📁 [Utils/HttpClientExtensions.cs]
 ````bash
     public static class HttpClientExtensions
@@ -427,3 +436,68 @@ update-database
 
     }
 ````
+
+<h2 align="center">Implementando a Classe ProductService</h2>
+
+📁 [Service/ProductService.cs]
+````bash
+    public class ProductService : IProductService
+    {
+        private readonly HttpClient _client;
+        public const string BasePath = "api/v1/product";
+
+        public ProductService(HttpClient client)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+        }
+
+        public async Task<IEnumerable<ProductModel>> FindAllProducts()
+        {
+            var response = await _client.GetAsync(BasePath);
+            return await response.ReadContentAs<List<ProductModel>>();
+        }
+
+        public async Task<ProductModel> FindProductById(long id)
+        {
+            var response = await _client.GetAsync($"{BasePath}/{id}");
+            return await response.ReadContentAs<ProductModel>();
+        }
+
+        public async Task<ProductModel> CreateProduct(ProductModel model)
+        {
+            var response = await _client.PostAsJson(BasePath, model);
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<ProductModel>();
+            else throw new Exception("Something went wrong when calling API");
+        }
+        public async Task<ProductModel> UpdateProduct(ProductModel model)
+        {
+            var response = await _client.PutAsJson(BasePath, model);
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<ProductModel>();
+            else throw new Exception("Something went wrong when calling API");
+        }
+
+        public async Task<bool> DeleteProductById(long id)
+        {
+            var response = await _client.DeleteAsync($"{BasePath}/{id}");
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<bool>();
+            else throw new Exception("Something went wrong when calling API");
+        }
+    }
+````
+
+<h2 align="center">Injeção de Dependência</h2>
+
+[Program.cs]
+
+````bash
+builder.Services.AddHttpClient<IProductService, ProductService>(c =>
+                    c.BaseAddress = new Uri(builder.Configuration["ServiceUrls:ProductAPI"])
+                );
+builder.Services.AddControllersWithViews();
+````
+
+
+
