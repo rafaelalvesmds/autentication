@@ -100,7 +100,7 @@ builder.Services.AddDbContext<MySQLContext>
 
 <br/>
   
-<h2 align="center">Executando as Migrations [Package Manager Console]</h2>
+<h2 align="center">Executando as Migrations</h2>
 
 ````bash
 add-migration [name]
