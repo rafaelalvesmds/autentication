@@ -1,6 +1,6 @@
 using AutoMapper;
 using E_Commerce.API.Config;
-using E_Commerce.API.Model.Context;
+using E_Commerce.API.Models.Context;
 using E_Commerce.API.Repository;
 using Microsoft.EntityFrameworkCore;
 

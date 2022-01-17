@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace E_Commerce.API.Model.Context
+namespace E_Commerce.API.Models.Context
 {
     public class MySQLContext : DbContext
     {

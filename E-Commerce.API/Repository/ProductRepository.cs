@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using E_Commerce.API.Data.ValueObjects;
 using E_Commerce.API.Model;
-using E_Commerce.API.Model.Context;
+using E_Commerce.API.Models.Context;
 using Microsoft.EntityFrameworkCore;
 
 namespace E_Commerce.API.Repository

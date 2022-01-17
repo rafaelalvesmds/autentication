@@ -1,4 +1,4 @@
-﻿using E_Commerce.API.Model.Base;
+﻿using E_Commerce.API.Models.Base;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
