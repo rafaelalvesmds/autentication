@@ -5,6 +5,7 @@
 - Visual Studio Community 2022
 - .NET 6.0
 
+
 ## Iniciando Projeto (Blank Solution)
 📁FrontEnd ( App Web ASP.NET Core MVC ) <br/>
 [E-Commerce.Web] <br/><br/>
@@ -232,8 +233,6 @@ public class ProductRepository : IProductRepository
     }
 ````
 
-<br/>
-
 [Program.cs]
 ````bash
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
@@ -361,6 +360,8 @@ update-database
 	}
 ````
 
+<br/>
+
 <h2 align="center">Criando Model</h2>
 
 📁 [Models/ProductModel.cs]
@@ -376,6 +377,8 @@ update-database
     }
 ````
 
+<br/>
+
 <h2 align="center">Definindo as Operações da Interface do Serviço</h2>
 
 📁 [Services/IServices/IProductService.cs]
@@ -389,6 +392,8 @@ update-database
         Task<bool> DeleteProductById(long id);
     }
 ````
+
+<br/>
 
 <h2 align="center">Implementando a Classe HttpClientExtensions</h2>
 
@@ -436,6 +441,8 @@ update-database
 
     }
 ````
+
+<br/>
 
 <h2 align="center">Implementando a Classe ProductService</h2>
 
@@ -487,6 +494,8 @@ update-database
         }
     }
 ````
+
+<br/>
 
 <h2 align="center">Injeção de Dependência</h2>
 
