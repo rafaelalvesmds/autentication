@@ -111,11 +111,9 @@ add-migration [name]
 update-database
 ````
 
-<br/><br/>
+<br/>
 
 <h2 align="center">Implementando Value Object </h2>
-
-<br/>
 
 📁[Data/ValueObjects/ProductVO.cs]
 ````bash
@@ -145,8 +143,6 @@ update-database
 
 <h2 align="center">Configurando AutoMapper</h2>
 
-<br/>
-
 📁[Config/MappingConfig.cs]
 ````bash
     public class MappingConfig
@@ -171,8 +167,6 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 <br/>
 
 <h2 align="center">Implementando Repositório de Produtos</h2>
-
-<br/>
 
 📁[Repository/ProductRepository.cs]
 ````bash
