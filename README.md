@@ -503,5 +503,105 @@ builder.Services.AddHttpClient<IProductService, ProductService>(c =>
 builder.Services.AddControllersWithViews();
 ````
 
+<br/>
 
+<h2 align="center">Integrando FRONT/BACK</h2>
 
+<br/>
+
+📁[E-Commerce.Web/Views/Shared/_Layout.cshtml]
+
+````bash
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+````
+
+````bash
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+````
+
+````bash
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+````
+
+<br/>
+
+<h2 align="center">Criando Controller</h2>
+
+<br/>
+
+📁 [E-Commerce.Web/Controllers/ProductController.cs]
+````bash
+public class ProductController : Controller
+    {
+        private readonly IProductService _productService;
+
+        public ProductController(IProductService productService)
+        {
+            _productService = productService;
+        }
+
+        public async Task<IActionResult> ProductIndex()
+        {
+            var products = await _productService.FindAllProducts();
+            return View(products);
+        }
+        public async Task<IActionResult> ProductCreate()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProductCreate(ProductModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _productService.CreateProduct(model);
+                if (response != null) return RedirectToAction(nameof(ProductIndex));
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> ProductUpdate(int id)
+        {
+            var model = await _productService.FindProductById(id);
+            if (model != null) return View(model);
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProductUpdate(ProductModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var response = await _productService.UpdateProduct(model);
+                if (response != null) return RedirectToAction(nameof(ProductUpdate));
+            }
+            return View(model);
+        }
+
+        public async Task<IActionResult> ProductDelete(int id)
+        {
+            var model = await _productService.FindProductById(id);
+            if (model != null) return View(model);
+            return NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ProductDelete(ProductModel model)
+        {
+            var response = await _productService.DeleteProductById(model.Id);
+            if (response) return RedirectToAction(nameof(ProductIndex));
+            return View(model);
+        }
+    }
+````
+
+<br/>
+
+<h2 align="center">Criando Camada de Apresemtação</h2>
+
+<br/>
+📁[E-Commerce.Web/Views/Product/ProductIndex.csproj] <br/>
+📁[E-Commerce.Web/Views/Product/ProductCreate.csproj] <br/>
+📁[E-Commerce.Web/Views/Product/ProductUpload.csproj] <br/>
+📁[E-Commerce.Web/Views/Product/ProductDelete.csproj] <br/>
