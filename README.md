@@ -505,22 +505,142 @@ builder.Services.AddControllersWithViews();
 
 <br/>
 
-<h2 align="center">Integrando FRONT/BACK</h2>
+<h1 align="center">📁 FRONTEND </h1>
+<h2 align="center">Definindo Estrutura Para Consumir Microsserviço</h2>
 
 <br/>
 
-📁[E-Commerce.Web/Views/Shared/_Layout.cshtml]
+📁 [Model/ProductModel.cs]
 
 ````bash
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    public class ProductModel
+    {
+        public long Id { get; set; }
+        public string? Name { get; set; }
+        public decimal Price { get; set; }
+        public string? Description { get; set; }
+        public string? CategoryName { get; set; }
+        public string? imageUrl { get; set; }
+    }
 ````
 
-````bash
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-````
+<br/>
+
+📁 [Service/IService/IProductService.cs]
 
 ````bash
-<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+    public interface IProductService
+    {
+        Task<IEnumerable<ProductModel>> FindAllProducts();
+        Task<ProductModel> FindProductById(long id);
+        Task<ProductModel> CreateProduct(ProductModel model);
+        Task<ProductModel> UpdateProduct(ProductModel model);
+        Task<bool> DeleteProductById(long id);
+    }
+````
+
+<br/>
+
+<h2 align="center">Implementando Classe HttpClientExtensions</h2>
+
+<br/>
+
+````bash
+public static class HttpClientExtensions
+    {
+        private static MediaTypeHeaderValue contentType
+            = new MediaTypeHeaderValue("application/json");
+        public static async Task<T> ReadContentAs<T>(
+            this HttpResponseMessage response)
+        {
+            if (!response.IsSuccessStatusCode) throw
+                     new ApplicationException(
+                         $"Something went wrong calling the API: " +
+                         $"{response.ReasonPhrase}");
+            var dataAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+            return JsonSerializer.Deserialize<T>(dataAsString,
+                new JsonSerializerOptions
+                { PropertyNameCaseInsensitive = true });
+        }
+
+        public static Task<HttpResponseMessage> PostAsJson<T>(
+            this HttpClient httpClient,
+            string url,
+            T data)
+        {
+            var dataAsString = JsonSerializer.Serialize(data);
+            var content = new StringContent(dataAsString);
+            content.Headers.ContentType = contentType;
+            return httpClient.PostAsync(url, content);
+        }
+
+        public static Task<HttpResponseMessage> PutAsJson<T>(
+            this HttpClient httpClient,
+            string url,
+            T data)
+        {
+            var dataAsString = JsonSerializer.Serialize(data);
+            var content = new StringContent(dataAsString);
+            content.Headers.ContentType = contentType;
+            return httpClient.PutAsync(url, content);
+        }
+    }
+````
+
+<br/>
+
+<h2 align="center">Implementando ProductService</h2>
+
+<br/>
+
+📁 [Service/ProductService.cs]
+
+````bash
+public class ProductService : IProductService
+    {
+        private readonly HttpClient _client;
+        public const string BasePath = "api/v1/product";
+
+        public ProductService(HttpClient client)
+        {
+            _client = client ?? throw new ArgumentNullException(nameof(client));
+        }
+
+        public async Task<IEnumerable<ProductModel>> FindAllProducts()
+        {
+            var response = await _client.GetAsync(BasePath);
+            return await response.ReadContentAs<List<ProductModel>>();
+        }
+
+        public async Task<ProductModel> FindProductById(long id)
+        {
+            var response = await _client.GetAsync($"{BasePath}/{id}");
+            return await response.ReadContentAs<ProductModel>();
+        }
+
+        public async Task<ProductModel> CreateProduct(ProductModel model)
+        {
+            var response = await _client.PostAsJson(BasePath, model);
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<ProductModel>();
+            else throw new Exception("Something went wrong when calling API");
+        }
+        public async Task<ProductModel> UpdateProduct(ProductModel model)
+        {
+            var response = await _client.PutAsJson(BasePath, model);
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<ProductModel>();
+            else throw new Exception("Something went wrong when calling API");
+        }
+
+        public async Task<bool> DeleteProductById(long id)
+        {
+            var response = await _client.DeleteAsync($"{BasePath}/{id}");
+            if (response.IsSuccessStatusCode)
+                return await response.ReadContentAs<bool>();
+            else throw new Exception("Something went wrong when calling API");
+        }
+    }
 ````
 
 <br/>
@@ -529,7 +649,7 @@ builder.Services.AddControllersWithViews();
 
 <br/>
 
-📁 [E-Commerce.Web/Controllers/ProductController.cs]
+📁 [Controllers/ProductController.cs]
 ````bash
 public class ProductController : Controller
     {
@@ -601,7 +721,24 @@ public class ProductController : Controller
 <h2 align="center">Criando Camada de Apresemtação</h2>
 
 <br/>
-📁[E-Commerce.Web/Views/Product/ProductIndex.csproj] <br/>
-📁[E-Commerce.Web/Views/Product/ProductCreate.csproj] <br/>
-📁[E-Commerce.Web/Views/Product/ProductUpload.csproj] <br/>
-📁[E-Commerce.Web/Views/Product/ProductDelete.csproj] <br/>
+
+📁[Views/Shared/_Layout.cshtml]
+
+````bash
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+````
+
+````bash
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+````
+
+````bash
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm" crossorigin="anonymous">
+````
+
+<br/>
+
+📁[Views/Product/ProductIndex.csproj] <br/>
+📁[Views/Product/ProductCreate.csproj] <br/>
+📁[Views/Product/ProductUpload.csproj] <br/>
+📁[Views/Product/ProductDelete.csproj] <br/>
