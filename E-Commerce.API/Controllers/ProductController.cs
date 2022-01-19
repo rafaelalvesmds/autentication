@@ -31,7 +31,7 @@ namespace E_Commerce.API.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create(ProductVO vo)
+        public async Task<ActionResult<ProductVO>> Create(ProductVO vo)
         {
             if (vo == null) return BadRequest();
             var product = await _repository.Create(vo);
@@ -39,7 +39,7 @@ namespace E_Commerce.API.Controllers
         }
 
         [HttpPut]
-        public async Task<ActionResult> Update(ProductVO vo)
+        public async Task<ActionResult<ProductVO>> Update(ProductVO vo)
         {
             if (vo == null) return BadRequest();
             var product = await _repository.Update(vo);

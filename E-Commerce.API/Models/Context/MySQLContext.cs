@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using E_Commerce.API.Model;
+using Microsoft.EntityFrameworkCore;
 
 namespace E_Commerce.API.Models.Context
 {
