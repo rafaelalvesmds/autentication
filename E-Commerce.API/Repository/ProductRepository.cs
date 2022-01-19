@@ -45,6 +45,7 @@ namespace E_Commerce.API.Repository
             await _context.SaveChangesAsync();
             return _mapper.Map<ProductVO>(product);
         }
+
         public async Task<bool> Delete(long id)
         {
             try
@@ -54,9 +55,10 @@ namespace E_Commerce.API.Repository
                     .FirstOrDefaultAsync();
                 if (product == null) return false;
                 _context.Products.Remove(product);
+                await _context.SaveChangesAsync();
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 return false;
             }
