@@ -47,7 +47,7 @@ namespace E_Commerce.Web.Controllers
             if (ModelState.IsValid)
             {
                 var response = await _productService.UpdateProduct(model);
-                if (response != null) return RedirectToAction(nameof(ProductUpdate));
+                if (response != null) return RedirectToAction(nameof(ProductIndex));
             }
             return View(model);
         }
