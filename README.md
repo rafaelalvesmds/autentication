@@ -53,20 +53,25 @@ Install Duende
 dotnet new --install Duende.IdentityServer.Templates
 ````
 
+<br>
+
 📁[E-commerce/foo]
 ````bash
 dotnet new isui
 ````
 
-Instalar Dependências
+<br>
+
+📚 Instalar Dependências
 ````bash
 Duende.IdentityServer.AspNetIdentity
 Microsoft.AspNetCore.Identity.EntityFrameworkCore
 Microsoft.AspNetCore.Identity.UI
 Pomelo.EntityFrameworkCore.MySql
-Microsoft.EntityFrameworkCore.Tools
 Microsoft.EntityFrameworkCore.Design
 ````
+
+<br>
 
 📁[Model/ApplicationUser.cs]
 ````bash
@@ -76,6 +81,8 @@ Microsoft.EntityFrameworkCore.Design
         public string SecondName { get; set; }
     }
 ````
+
+<br>
 
 
 📁[Model/Context/MySQLContext]
@@ -87,8 +94,9 @@ Microsoft.EntityFrameworkCore.Design
     }
 ````
 
+<br>
 
-CUSTOM CONFIGURATION
+✅ IDENTITY CUSTOM CONFIGURATION
 ````bash
     public static class IdentityConfiguration
     {
@@ -124,6 +132,8 @@ CUSTOM CONFIGURATION
             };
     };
 ````
+
+<br>
 
 📁[Configuration/IdentityConfiguration]
 ````bash
@@ -176,6 +186,8 @@ CUSTOM CONFIGURATION
             };
     };
 ````
+
+<br>
 
 📁[Program.cs]
 ````bash
@@ -239,7 +251,7 @@ app.MapControllerRoute(
 app.Run();
 ````
 
-<br>
+<br><br>
 
 ## Migrations
 
@@ -247,14 +259,17 @@ Install
 ````bash
 dotnet tool install --global dotnet-ef
 ```` 
+
 Update
 ````bash
 dotnet tool update --global dotnet-ef
 ```` 
+
 Add-Migration
 ````bash
 dotnet ef migrations add [name]
 ```` 
+
 Update Datebase
 ````bash
 dotnet ef database update
