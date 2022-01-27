@@ -238,3 +238,24 @@ app.MapControllerRoute(
 
 app.Run();
 ````
+
+<br>
+
+## Migrations
+
+Install
+````bash
+dotnet tool install --global dotnet-ef
+```` 
+Update
+````bash
+dotnet tool update --global dotnet-ef
+```` 
+Add-Migration
+````bash
+dotnet ef migrations add [name]
+```` 
+Update Datebase
+````bash
+dotnet ef database update
+```` 
