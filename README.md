@@ -62,7 +62,7 @@ dotnet new isui
 
 <br>
 
-📚 Instalar Dependências
+📚 Instalar Dependências [E-commerce/E-commerce.IdentityServer]
 ````bash
 Duende.IdentityServer.AspNetIdentity
 Microsoft.AspNetCore.Identity.EntityFrameworkCore
