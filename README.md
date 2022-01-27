@@ -274,3 +274,9 @@ Update Datebase
 ````bash
 dotnet ef database update
 ```` 
+
+<br>
+
+<div align=center>
+<img src="https://user-images.githubusercontent.com/84939473/151391808-788d8102-8e58-4cc0-9476-6dabf8de12ee.png"/>
+</div>
