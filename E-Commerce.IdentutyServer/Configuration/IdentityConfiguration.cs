@@ -1,7 +1,7 @@
 ﻿using Duende.IdentityServer;
 using Duende.IdentityServer.Models;
 
-namespace E_Commerce.IdentutyServer.Configuration
+namespace E_Commerce.IdentityServer.Configuration
 {
     public static class IdentityConfiguration
     {

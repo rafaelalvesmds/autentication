@@ -1,4 +1,4 @@
-namespace E_Commerce.IdentutyServer.Models
+namespace E_Commerce.IdentityServer.Models
 {
     public class ErrorViewModel
     {

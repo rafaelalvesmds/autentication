@@ -1,6 +1,8 @@
-using E_Commerce.IdentutyServer.Configuration;
-using E_Commerce.IdentutyServer.Model;
-using E_Commerce.IdentutyServer.Model.Context;
+using E_Commerce.IdentityServer.Configuration;
+using E_Commerce.IdentityServer.Configuration.Initializer;
+using E_Commerce.IdentityServer.Model;
+using E_Commerce.IdentityServer.Model.Context;
+using E_Commerce.IdentuiyServer.Configuration.Initializer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,9 +32,14 @@ var config = builder.Services.AddIdentityServer(options =>
                     .AddInMemoryClients(IdentityConfiguration.Clients)
                     .AddAspNetIdentity<ApplicationUser>();
 
+builder.Services.AddScoped<IDBInitializer, DBInitializer>();
+
 config.AddDeveloperSigningCredential();
 
 var app = builder.Build();
+
+var scope = app.Services.CreateScope();
+var serviceInitialize = scope.ServiceProvider.GetService<IDBInitializer>();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -48,6 +55,8 @@ app.UseRouting();
 app.UseIdentityServer();
 
 app.UseAuthorization();
+
+serviceInitialize.Initialize(); 
 
 app.MapControllerRoute(
     name: "default",

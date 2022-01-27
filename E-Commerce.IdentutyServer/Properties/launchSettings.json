@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "E_Commerce.IdentutyServer": {
+    "E_Commerce.IdentityServer": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
