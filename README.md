@@ -191,25 +191,12 @@ Microsoft.EntityFrameworkCore.Design
 
 📁[Program.cs]
 ````bash
-using E_Commerce.IdentutyServer.Configuration;
-using E_Commerce.IdentutyServer.Model;
-using E_Commerce.IdentutyServer.Model.Context;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddControllersWithViews();
-
-builder.Services.AddDbContext<MySQLContext>
-    (options => options.UseMySql("Server=localhost; DataBase=shopping_product_IdentityServer;Uid=root;Pwd=admin123",
-    Microsoft.EntityFrameworkCore.ServerVersion.Parse("8.0.27-mysql")));
-
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddEntityFrameworkStores<MySQLContext>()
     .AddDefaultTokenProviders();
+````
 
+````bash
 var config = builder.Services.AddIdentityServer(options =>
 {
     options.Events.RaiseErrorEvents = true;
@@ -222,33 +209,10 @@ var config = builder.Services.AddIdentityServer(options =>
                     .AddInMemoryApiScopes(IdentityConfiguration.ApiScopes)
                     .AddInMemoryClients(IdentityConfiguration.Clients)
                     .AddAspNetIdentity<ApplicationUser>();
+````
 
-config.AddDeveloperSigningCredential();
-
-
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-}
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-
-app.UseRouting();
-
+````bash
 app.UseIdentityServer();
-
-app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
-app.Run();
 ````
 
 <br><br>
@@ -392,4 +356,157 @@ var serviceInitialize = scope.ServiceProvider.GetService<IDBInitializer>();
 
 ````bash
 serviceInitialize.Initialize(); 
+````
+
+<br>
+
+
+📁[E_Commerce.Web/Utils/Role] / 📁[E_Commerce.API/Utils/Role]
+
+````bash
+    public static class Role
+    {
+        public const string Admin = "Admin";
+        public const string Client = "Client";
+    }
+````
+
+<br>
+
+### ADICIONANDO AUTORIZAÇÃO
+
+<br>
+
+📁[E_Commerce.Web/Controllers/ProductController] / 📁[E_Commerce.API/Controllers/ProductController]
+````bash
+[Authorize]
+[Authorize(Roles = Role.Admin)]
+````
+
+<br>
+
+
+DEPENDÊNCIAS [E-commerce.Web]
+
+```bash
+Microsoft.AspNetCore.Authentication
+Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation
+Microsoft.AspNetCore.Authentication.OpenIdConnect
+System.IdentityModel.Tokens.Jwt
+````
+
+<br>
+
+
+📁[Program.cs] [E-commerce.Web]
+````bash
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = "Cookies";
+    options.DefaultChallengeScheme = "oidc";
+})
+    .AddCookie("Cookies", c => c.ExpireTimeSpan = TimeSpan.FromMinutes(10) )
+    .AddOpenIdConnect("oidc", options =>
+    {
+        options.Authority = builder.Configuration["ServiceUrls:IdentityServer"];
+        options.GetClaimsFromUserInfoEndpoint = true;
+        options.ClientId = "e_commerce";
+        options.ClientSecret = "my_super_secret";
+        options.ResponseType = "code";
+        options.ClaimActions.MapJsonKey("role", "role", "role");
+        options.ClaimActions.MapJsonKey("sub", "sub", "sub");
+        options.TokenValidationParameters.NameClaimType = "name";
+        options.TokenValidationParameters.RoleClaimType = "role";
+        options.Scope.Add("e_commerce");
+        options.SaveTokens = true;
+    }
+````
+
+````bash
+app.UseAuthentication();    
+````
+
+<br>
+
+📁[Program.cs] [E-commerce.API]
+````bash
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
+   {
+       options.Authority = "https://localhost:4435/";
+       options.TokenValidationParameters = new TokenValidationParameters
+       {
+           ValidateAudience = false
+       };
+   });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("ApiScope", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.RequireClaim("scope", "e_commerce");
+    });
+});
+````
+
+````bash
+app.UseAuthentication();
+````
+<br>
+
+### ADICIONANDO SWAGGER AUTHENTICATION
+
+<br>
+
+📁[Program.cs] [E-commerce.API]
+````bash
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "E-Commerce.ProductAPI", Version = "v1" });
+    c.EnableAnnotations();
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = @"Enter 'Bearer' [space] and your token",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            },
+            Scheme = "oauth2",
+            Name = "Bearer",
+            In = ParameterLocation.Header
+        },
+        new List<string>()
+        }
+    });
+
+});
+````
+
+<br>
+
+### LOGIN / LOGOUT 
+
+📁[E-Commerce.Web/Controllers/HomeController] 
+````bash
+        [Authorize]
+        public async Task<IActionResult> Login()
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Logout()
+        {
+            return SignOut("Cookies", "oidc");
+        }
 ````
